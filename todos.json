@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "title": "Make a Todo App with Go",
+    "done": false
+  },
+  {
+    "id": 2,
+    "title": "Talk about chickens with AI",
+    "done": false
+  }
+]
