@@ -37,6 +37,14 @@ task-cli
 
 ## Usage
 
+### Manual page
+
+```bash
+task-cli help
+```
+
+---
+
 ### Add a task
 
 ```bash
@@ -87,18 +95,12 @@ task-cli delete {id}
 
 ## Features
 
+- Manual page
 - Add new tasks
 - List all tasks
 - Mark tasks as done
 - Simple JSON-based storage
-
----
-
-## Future Improvements
-
 - Delete tasks
-- Better CLI flags
-- Sorting and filtering
 
 ---
 
