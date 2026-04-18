@@ -2,29 +2,21 @@ package utils
 
 import (
 	"encoding/json"
-	"log"
-	"os"
 
 	"github.com/JanisJuska/Go-task-cli/task"
 )
 
-func ReturnIdCount(filename string) uint {
-	dataFile, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0644)
+func ReturnIdCount(filename string) (uint, error) {
+	fileData, err := OpenAndReadFile(filename)
 	if err != nil {
-		log.Fatalf("Cannot open the file due to: %v\n", err)
+		return 0, err
 	}
-	fileData, err := os.ReadFile(filename)
-	if err != nil {
-		log.Fatalf("Cannot read the file due to: %v\n", err)
-	}
-
-	defer dataFile.Close()
 
 	var dataSlice []task.Task
 	err = json.Unmarshal(fileData, &dataSlice)
 	if err != nil {
-		return 0
+		return 0, err
 	}
 
-	return dataSlice[len(dataSlice)-1].ID
+	return dataSlice[len(dataSlice)-1].ID, nil
 }

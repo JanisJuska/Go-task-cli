@@ -3,7 +3,6 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"slices"
 	"strconv"
@@ -11,11 +10,11 @@ import (
 	"github.com/JanisJuska/Go-task-cli/task"
 )
 
-func SearchByIDAndMarkDone(argString string, tasks []task.Task) []task.Task {
+func SearchByIDAndMarkDone(argString string, tasks []task.Task) ([]task.Task, error) {
 
 	id, err := strconv.Atoi(argString)
 	if err != nil {
-		log.Fatalf("Cannot convert string to number due to: %v\n", err)
+		return nil, err
 	}
 
 	var taskTitle string
@@ -31,22 +30,25 @@ func SearchByIDAndMarkDone(argString string, tasks []task.Task) []task.Task {
 	}
 
 	fileData, err := json.MarshalIndent(tasks, "", "  ")
+	if err != nil {
+		return nil, err
+	}
 
 	err = os.WriteFile("todos.json", fileData, 0644)
 	if err != nil {
-		log.Fatalf("Cannot write to file due to: %v\n", err)
+		return nil, err
 	}
 
 	fmt.Printf("'%v' task marked as Done ✔️\n", taskTitle)
 
-	return tasks
+	return tasks, nil
 }
 
-func SearchByIDAndDelete(argString string, tasks []task.Task) []task.Task {
+func SearchByIDAndDelete(argString string, tasks []task.Task) ([]task.Task, error) {
 
 	id, err := strconv.Atoi(argString)
 	if err != nil {
-		log.Fatalf("Cannot convert string to number due to: %v\n", err)
+		return nil, err
 	}
 
 	var taskTitle string
@@ -61,13 +63,16 @@ func SearchByIDAndDelete(argString string, tasks []task.Task) []task.Task {
 	}
 
 	fileData, err := json.MarshalIndent(tasks, "", "  ")
+	if err != nil {
+		return nil, err
+	}
 
 	err = os.WriteFile("todos.json", fileData, 0644)
 	if err != nil {
-		log.Fatalf("Cannot write to file due to: %v\n", err)
+		return nil, err
 	}
 
 	fmt.Printf("'%v' task removed\n", taskTitle)
 
-	return tasks
+	return tasks, nil
 }

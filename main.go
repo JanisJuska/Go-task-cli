@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -11,14 +10,22 @@ import (
 	"github.com/JanisJuska/Go-task-cli/utils"
 )
 
-var tasks = returnListFromFile("todos.json")
-var idCount uint = utils.ReturnIdCount("todos.json")
-
 func main() {
 
 	if len(os.Args) <= 1 {
 		log.Fatalf("No argument passed.\n")
 	} else {
+
+		var tasks, err = utils.ReturnListFromFile("todos.json")
+		if err != nil {
+			log.Fatal(err)
+		}
+		var idCount uint
+		idCount, err = utils.ReturnIdCount("todos.json")
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		allArgs := os.Args[1:]
 		firstArg := allArgs[0]
 		afterArgs := allArgs[1:]
@@ -32,7 +39,10 @@ func main() {
 			newTask.Title = argString
 			newTask.Done = false
 
-			tasks = addNewTaskToJSON(newTask, "todos.json")
+			tasks, err = utils.AddNewTaskToJSON(newTask, "todos.json")
+			if err != nil {
+				log.Fatal(err)
+			}
 
 			fmt.Printf("'%v' succesfully added to the list\n", argString)
 		case "list":
@@ -47,58 +57,20 @@ func main() {
 
 			fmt.Println()
 		case "done":
-			tasks = utils.SearchByIDAndMarkDone(argString, tasks)
+			tasks, err = utils.SearchByIDAndMarkDone(argString, tasks)
+			if err != nil {
+				log.Fatal(err)
+			}
 
 		case "delete":
-			tasks = utils.SearchByIDAndDelete(argString, tasks)
+			tasks, err = utils.SearchByIDAndDelete(argString, tasks)
+			if err != nil {
+				log.Fatal(err)
+			}
 		case "help":
-			readmeData := utils.OpenAndReadFile("./README.md")
-
-			readme := string(readmeData)
-
-			readme = strings.ReplaceAll(readme, "task-cli", "")
-			readme = strings.ReplaceAll(readme, "```", "")
-			readme = strings.ReplaceAll(readme, "bash", "")
-
-			// usageIndex := strings.Index(readme, "Usage")
-			// fmt.Println(usageIndex)
-			// usageIndex = strings.Index(readme, "Notes")
-			// fmt.Println(usageIndex)
-
-			fmt.Println(readme[423:814])
-
+			utils.ShowHelp()
 		default:
-			log.Fatalf("Wrong argument passed. Please pass 'help' as argument to read the manual\n")
+			log.Fatal("Wrong argument passed. Please pass 'help' as argument to read the manual\n")
 		}
 	}
-}
-
-func addNewTaskToJSON(newTask task.Task, filename string) []task.Task {
-
-	tasksList := returnListFromFile(filename)
-	fileData := utils.OpenAndReadFile(filename)
-
-	tasksList = append(tasksList, newTask)
-
-	fileData, err := json.MarshalIndent(tasksList, "", "  ")
-	if err != nil {
-		log.Fatalf("Cannot Marshal file due to: %v\n", err)
-	}
-
-	err = os.WriteFile(filename, fileData, 0644)
-	if err != nil {
-		log.Fatalf("Cannot write to file due to: %v\n", err)
-	}
-
-	return tasksList
-
-}
-
-func returnListFromFile(filename string) []task.Task {
-	fileData := utils.OpenAndReadFile(filename)
-
-	var tasksList []task.Task
-	json.Unmarshal(fileData, &tasksList)
-
-	return tasksList
 }

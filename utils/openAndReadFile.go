@@ -1,21 +1,20 @@
 package utils
 
 import (
-	"log"
 	"os"
 )
 
-func OpenAndReadFile(filename string) []byte {
+func OpenAndReadFile(filename string) ([]byte, error) {
 	dataFile, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
-		log.Fatalf("Cannot open the file due to: %v\n", err)
+		return nil, err
 	}
 	fileData, err := os.ReadFile(filename)
 	if err != nil {
-		log.Fatalf("Cannot read the file due to: %v\n", err)
+		return nil, err
 	}
 
 	defer dataFile.Close()
 
-	return fileData
+	return fileData, nil
 }
